@@ -19,6 +19,7 @@ var (
 	clientID        string
 	databaseURL     string
 	disableDatabase bool
+	migration       string
 )
 
 func loadEnv() {
@@ -26,10 +27,6 @@ func loadEnv() {
 	if env == "" {
 		env = "development"
 	}
-	log.WithFields(log.Fields{
-		"BACKEND_ENV": env,
-	}).Info()
-
 	godotenv.Load(".env." + env)
 	godotenv.Load()
 
@@ -38,7 +35,10 @@ func loadEnv() {
 	frontendURL = os.Getenv("FRONTEND_URL")
 	clientID = os.Getenv("CLIENT_ID")
 	disableDatabase = os.Getenv("DISABLE_DATABASE") == "true"
+	migration = os.Getenv("MIGRATION")
+
 	log.WithFields(log.Fields{
+		"BACKEND_ENV":      env,
 		"DISABLE_DATABASE": disableDatabase,
 	}).Info()
 }
@@ -62,15 +62,20 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	var db *database.Database = &database.Database{}
+	var db *database.Database
+	var err error
 	if !disableDatabase {
-		db, err := database.Setup(databaseLogger, databaseURL)
+		db, err = database.Setup(databaseLogger, databaseURL)
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 		defer db.Close()
-	} else {
-		db = nil
+	}
+
+	if migration == "soft" {
+		db.SoftMigrate()
+	} else if migration == "hard" {
+		db.HardMigrate()
 	}
 
 	s := server.Setup(serverLogger, port, db, clientID, frontendURL)

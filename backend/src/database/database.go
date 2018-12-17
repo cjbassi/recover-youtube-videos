@@ -22,7 +22,6 @@ func Setup(logger *logrus.Entry, databaseURL string) (*Database, error) {
 		logger:     logger,
 		Connection: db,
 	}
-	database.HardMigrate()
 	return database, nil
 }
 
