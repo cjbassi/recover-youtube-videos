@@ -4,15 +4,12 @@ import { connect } from 'react-redux'
 import * as backend from '../api/backend'
 
 interface IVideoList {
-  playlists?: backend.IPlaylist[]
+  playlists: backend.IPlaylist[]
 }
 
 class VideoList extends React.Component<IVideoList> {
   public render() {
     const { playlists } = this.props
-    if (playlists === undefined) {
-      return null
-    }
     return (
       <ul>
         {playlists.map((playlist: backend.IPlaylist) => (
