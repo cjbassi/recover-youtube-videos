@@ -14,10 +14,11 @@ import (
 )
 
 var (
-	port        string
-	frontendURL string
-	clientID    string
-	databaseURL string
+	port            string
+	frontendURL     string
+	clientID        string
+	databaseURL     string
+	disableDatabase bool
 )
 
 func loadEnv() {
@@ -36,6 +37,10 @@ func loadEnv() {
 	databaseURL = os.Getenv("DATABASE_URL")
 	frontendURL = os.Getenv("FRONTEND_URL")
 	clientID = os.Getenv("CLIENT_ID")
+	disableDatabase = os.Getenv("DISABLE_DATABASE") == "true"
+	log.WithFields(log.Fields{
+		"DISABLE_DATABASE": disableDatabase,
+	}).Info()
 }
 
 func main() {
@@ -58,11 +63,15 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	var db *database.Database = &database.Database{}
-	db, err := database.Setup(databaseLogger, databaseURL)
-	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+	if !disableDatabase {
+		db, err := database.Setup(databaseLogger, databaseURL)
+		if err != nil {
+			log.Fatalf("failed to connect to database: %v", err)
+		}
+		defer db.Close()
+	} else {
+		db = nil
 	}
-	defer db.Close()
 
 	s := server.Setup(serverLogger, port, db, clientID, frontendURL)
 

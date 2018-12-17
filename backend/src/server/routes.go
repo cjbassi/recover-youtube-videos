@@ -59,24 +59,26 @@ func (s *Server) fetchMissingVideos(w http.ResponseWriter, r *http.Request) {
 		}
 		return playlistsOfRemovedVideos
 	}()
-	// check database for any video matches and replace the item in the playlist before we send it
-	for i := 0; i < len(playlistsOfRemovedVideos); i++ {
-		for j := 0; j < len(playlistsOfRemovedVideos[i].Videos); j++ {
-			title := playlistsOfRemovedVideos[i].Videos[j].Title
-			var video Video
-			s.Database.Connection.Where("id = ?", title).First(&video)
-			if video.ID != "" {
-				playlistsOfRemovedVideos[i].Videos[j] = video
+	if s.Database != nil {
+		// check database for any video matches and replace the item in the playlist before we send it
+		for i := 0; i < len(playlistsOfRemovedVideos); i++ {
+			for j := 0; j < len(playlistsOfRemovedVideos[i].Videos); j++ {
+				title := playlistsOfRemovedVideos[i].Videos[j].Title
+				var video Video
+				s.Database.Connection.Where("id = ?", title).First(&video)
+				if video.ID != "" {
+					playlistsOfRemovedVideos[i].Videos[j] = video
+				}
 			}
 		}
-	}
-	for _, playlist := range playlists {
-		if s.Database.Connection.NewRecord(playlist) {
-			s.Database.Connection.Create(&playlist)
-		}
-		for _, video := range playlist.Videos {
-			if s.Database.Connection.NewRecord(video) {
-				s.Database.Connection.Create(&video)
+		for _, playlist := range playlists {
+			if s.Database.Connection.NewRecord(playlist) {
+				s.Database.Connection.Create(&playlist)
+			}
+			for _, video := range playlist.Videos {
+				if s.Database.Connection.NewRecord(video) {
+					s.Database.Connection.Create(&video)
+				}
 			}
 		}
 	}
@@ -117,8 +119,10 @@ func (s *Server) tokenSignIn(w http.ResponseWriter, r *http.Request) {
 		ID:   claimSet.Sub,
 	}
 
-	if s.Database.Connection.NewRecord(user) {
-		s.Database.Connection.Create(&user)
+	if s.Database != nil {
+		if s.Database.Connection.NewRecord(user) {
+			s.Database.Connection.Create(&user)
+		}
 	}
 
 	// Create a new token object, specifying signing method and the claims
