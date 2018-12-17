@@ -3,7 +3,8 @@ package models
 type Video struct {
 	ID         string `json:"id" gorm:"primary_key"`
 	Title      string `json:"title"`
-	PlaylistID string `json:playlist_id gorm:"primary_key"`
+	PlaylistID string `json:"playlist_id" gorm:"primary_key"`
+	Position   int64  `json:"position"`
 }
 
 type Playlist struct {

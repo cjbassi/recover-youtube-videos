@@ -31,6 +31,7 @@ export interface IPlaylist {
 export interface IVideo {
   id: string
   title: string
+  position: number
 }
 
 export function googleURL(video: IVideo) {

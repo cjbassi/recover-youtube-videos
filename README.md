@@ -34,7 +34,6 @@ To run locally:
 - fetch videos from 'Watch Later'
 - testing
 - code comments
-- improve UI
 - client side error handling of backend requests
 - fix presentation of videos that have been recovered
 - fix router.apply(middlwares)

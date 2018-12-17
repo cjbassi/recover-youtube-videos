@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { List } from 'semantic-ui-react'
 
 import * as backend from '../api/backend'
 
@@ -11,28 +12,44 @@ class VideoList extends React.Component<IVideoList> {
   public render() {
     const { playlists } = this.props
     return (
-      <ul>
+      <List size={'massive'}>
         {playlists.map((playlist: backend.IPlaylist) => (
-          <li key={playlist.id}>
-            {playlist.title}
-            <ul>
-              {playlist.videos.map((video: backend.IVideo) => (
-                <li key={video.id}>
-                  {video.title}
-                  <ul>
-                    <li key='google url'>
-                      <a href={backend.googleURL(video)}>Google</a>
-                    </li>
-                    <li key='waybackmachine url'>
-                      <a href={backend.waybackMachineURL(video)}>Archive.org</a>
-                    </li>
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </li>
+          <List.Item key={playlist.id}>
+            <List.Content>
+              <List.Header>{playlist.title}</List.Header>
+              <List>
+                {playlist.videos.map((video: backend.IVideo) => (
+                  <List.Item key={video.id}>
+                    <List.Icon
+                      style={{
+                        position: 'relative',
+                        left: '5px',
+                        top: '5px',
+                      }}
+                      size={'small'}
+                    >
+                      {video.position}
+                    </List.Icon>
+                    <List.Content>
+                      <div style={{ fontSize: 'large' }}>{video.title}</div>
+                      <List horizontal={true}>
+                        <List.Item key='google url'>
+                          <a href={backend.googleURL(video)}>Google</a>
+                        </List.Item>
+                        <List.Item key='waybackmachine url'>
+                          <a href={backend.waybackMachineURL(video)}>
+                            Archive.org
+                          </a>
+                        </List.Item>
+                      </List>
+                    </List.Content>
+                  </List.Item>
+                ))}
+              </List>
+            </List.Content>
+          </List.Item>
         ))}
-      </ul>
+      </List>
     )
   }
 }

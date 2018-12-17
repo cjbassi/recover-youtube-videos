@@ -1,42 +1,51 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Button, Dropdown, Image } from 'semantic-ui-react'
 
 import * as actions from '../actions'
-import { IPlaylist } from '../api/backend'
 import { handleAuthClick, revokeAccess } from '../api/google-sign-in'
 import { IStoreState } from '../store'
-import VideoList from './VideoList'
 
 interface ILoggedInProps {
   avatarURL?: string
   userName?: string
-  fetchingMissingVideos: boolean
-  playlists: IPlaylist[]
   fetchMissingVideos: () => void
 }
 
 class LoggedIn extends React.Component<ILoggedInProps> {
   public render() {
-    const {
-      avatarURL,
-      userName,
-      fetchMissingVideos,
-      playlists,
-      fetchingMissingVideos,
-    } = this.props
+    const { avatarURL, userName, fetchMissingVideos } = this.props
     return (
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}
+      >
+        <Button onClick={fetchMissingVideos}>Fetch removed videos</Button>
         <div>
-          <button onClick={revokeAccess}>Revoke access</button>
-          <button onClick={handleAuthClick}>Log out</button>
-          <button onClick={fetchMissingVideos}>Fetch missing videos</button>
+          <Dropdown
+            trigger={<Image src={avatarURL} alt='Google avatar image' />}
+            icon={null}
+            direction='left'
+            options={[
+              {
+                key: 'username',
+                text: userName,
+                disabled: true,
+              },
+              {
+                key: 'handleAuthClick',
+                text: <Button onClick={handleAuthClick}>Log out</Button>,
+              },
+              {
+                key: 'revokeAccess',
+                text: <Button onClick={revokeAccess}> Revoke access</Button>,
+              },
+            ]}
+          />
         </div>
-        <div>
-          <div>{userName}</div>
-          <img src={avatarURL} alt='Google avatar image' />
-        </div>
-        {fetchingMissingVideos && <div>Fetching playlists</div>}
-        {playlists !== undefined && <VideoList />}
       </div>
     )
   }
@@ -47,8 +56,6 @@ const mapStateToProps = (state: IStoreState) => {
     avatarURL: state.avatarURL,
     userName: state.userName,
     accessToken: state.accessToken,
-    fetchingMissingVideos: state.fetchingMissingVideos,
-    playlists: state.playlists,
   }
 }
 
