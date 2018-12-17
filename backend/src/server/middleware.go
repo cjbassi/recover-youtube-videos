@@ -1,13 +1,10 @@
 package server
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -63,48 +60,5 @@ func (s *Server) cors(handler http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", s.frontendURL)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		handler.ServeHTTP(w, r)
-	})
-}
-
-func (s *Server) authMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("token")
-		if err != nil {
-			s.logger.Warnf("unauthorized request: no 'token' cookie")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
-			return
-		}
-		tokenString := cookie.Value
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-			}
-			return s.JWTKey, nil
-		})
-		if err != nil {
-			s.logger.Errorf("failed to parse JWT: %v", err)
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
-			return
-		}
-
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			ID := claims["ID"].(string)
-			if ID == "" {
-				s.logger.Warnf("unauthorized request: no 'ID' in JWT")
-				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Unauthorized"))
-				return
-			}
-			r = r.WithContext(context.WithValue(context.Background(), "ID", ID))
-			next.ServeHTTP(w, r)
-		} else {
-			s.logger.Warnf("unauthorized request: invalid JWT token")
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
-			return
-		}
 	})
 }

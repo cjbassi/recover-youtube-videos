@@ -20,9 +20,9 @@ export const coalesceGoogleSignoutStatus = () =>
 
 export const coalescePlaylists = (playlists: IPlaylist[]) =>
   action(ActionName.coalescePlaylists, {
-    fetchingMissingVideos: false,
+    fetchingRemovedVideos: false,
     playlists,
   })
 
-export const fetchingMissingVideos = () =>
-  action(ActionName.fetchingMissingVideos, { fetchingMissingVideos: true })
+export const fetchingRemovedVideos = () =>
+  action(ActionName.fetchingRemovedVideos, { fetchingRemovedVideos: true })

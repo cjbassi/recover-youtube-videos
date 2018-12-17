@@ -1,17 +1,8 @@
-export async function signIn(idToken: string) {
-  await fetch(process.env.REACT_APP_API_URL + '/tokensignin', {
-    method: 'POST',
-    body: JSON.stringify({ idtoken: idToken }),
-    credentials: 'include',
-    mode: 'cors',
-  })
-}
-
-export async function fetchMissingVideos(
+export async function fetchRemovedVideos(
   accessToken: string,
 ): Promise<IPlaylist[]> {
   const response = await fetch(
-    process.env.REACT_APP_API_URL + '/fetchmissingvideos',
+    process.env.REACT_APP_API_URL + '/fetchremovedvideos',
     {
       method: 'POST',
       body: JSON.stringify({ access_token: accessToken }),

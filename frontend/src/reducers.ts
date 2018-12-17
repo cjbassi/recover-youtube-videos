@@ -8,7 +8,7 @@ const initialState = {
   userName: undefined,
   accessToken: undefined,
   playlists: undefined,
-  fetchingMissingVideos: false,
+  fetchingRemovedVideos: false,
 }
 
 export default function rootReducer(
@@ -31,7 +31,7 @@ export default function rootReducer(
         ...state,
         ...action.payload,
       }
-    case ActionName.fetchingMissingVideos:
+    case ActionName.fetchingRemovedVideos:
       return {
         ...state,
         ...action.payload,

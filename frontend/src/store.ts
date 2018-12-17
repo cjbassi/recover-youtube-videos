@@ -10,7 +10,7 @@ export interface IStoreState {
   userName?: string
   accessToken?: string
   playlists?: IPlaylist[]
-  fetchingMissingVideos: boolean
+  fetchingRemovedVideos: boolean
 }
 
 export default createStore<IStoreState, any, any, any>(

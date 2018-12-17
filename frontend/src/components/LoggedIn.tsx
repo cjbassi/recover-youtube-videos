@@ -9,12 +9,12 @@ import { IStoreState } from '../store'
 interface ILoggedInProps {
   avatarURL?: string
   userName?: string
-  fetchMissingVideos: () => void
+  fetchRemovedVideos: () => void
 }
 
 class LoggedIn extends React.Component<ILoggedInProps> {
   public render() {
-    const { avatarURL, userName, fetchMissingVideos } = this.props
+    const { avatarURL, userName, fetchRemovedVideos } = this.props
     return (
       <div
         style={{
@@ -23,7 +23,7 @@ class LoggedIn extends React.Component<ILoggedInProps> {
           justifyContent: 'space-around',
         }}
       >
-        <Button onClick={fetchMissingVideos}>Fetch removed videos</Button>
+        <Button onClick={fetchRemovedVideos}>Fetch removed videos</Button>
         <div>
           <Dropdown
             trigger={<Image src={avatarURL} alt='Google avatar image' />}
@@ -69,8 +69,8 @@ const mergeProps = (
   return {
     ...stateProps,
     ...ownProps,
-    fetchMissingVideos: () => {
-      dispatch(actions.fetchMissingVideos(accessToken))
+    fetchRemovedVideos: () => {
+      dispatch(actions.fetchRemovedVideos(accessToken))
     },
   }
 }

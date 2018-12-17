@@ -32,9 +32,6 @@ function dispatchSigninStatusUpdate() {
   if (isAuthorized) {
     const authResponse = googleUser.getAuthResponse()
     const accessToken = authResponse.access_token
-    const idToken = authResponse.id_token
-    Store.dispatch(actions.logginBackend(idToken))
-
     const userProfile = googleUser.getBasicProfile()
     const userName = userProfile.getName()
     const imageUrl = userProfile.getImageUrl()

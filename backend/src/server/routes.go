@@ -7,9 +7,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/futurenda/google-auth-id-token-verifier"
-
 	"github.com/cjbassi/recover-youtube-videos/backend/src/api"
 	. "github.com/cjbassi/recover-youtube-videos/backend/src/models"
 	. "github.com/cjbassi/recover-youtube-videos/backend/src/utils"
@@ -23,7 +20,7 @@ func (s *Server) healthz(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) fetchMissingVideos(w http.ResponseWriter, r *http.Request) {
+func (s *Server) fetchRemovedVideos(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var body struct {
 		AccessToken string `json:"access_token"`
@@ -85,62 +82,4 @@ func (s *Server) fetchMissingVideos(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(
 		playlistsOfRemovedVideos,
 	)
-}
-
-func (s *Server) tokenSignIn(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var body struct {
-		IDToken string `json:"idtoken"`
-	}
-	err := decoder.Decode(&body)
-	if err != nil {
-		s.logger.Errorf("failed to parse request body: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	v := googleAuthIDTokenVerifier.Verifier{}
-	err = v.VerifyIDToken(body.IDToken, []string{
-		s.clientID,
-	})
-	if err != nil {
-		s.logger.Errorf("failed to validate token: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	claimSet, err := googleAuthIDTokenVerifier.Decode(body.IDToken)
-	if err != nil {
-		s.logger.Errorf("failed to decode token: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	user := User{
-		Name: claimSet.Name,
-		ID:   claimSet.Sub,
-	}
-
-	if s.Database != nil {
-		if s.Database.Connection.NewRecord(user) {
-			s.Database.Connection.Create(&user)
-		}
-	}
-
-	// Create a new token object, specifying signing method and the claims
-	// you would like it to contain.
-	expiration := time.Now().Add(s.tokenExpiration)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"ID":  user.ID,
-		"exp": expiration,
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	tokenString, err := token.SignedString(s.JWTKey)
-	if err != nil {
-		s.logger.Errorf("failed to sign token: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	cookie := http.Cookie{Name: "token", Value: tokenString, Expires: expiration}
-	http.SetCookie(w, &cookie)
 }

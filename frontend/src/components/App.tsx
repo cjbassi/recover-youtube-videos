@@ -12,13 +12,13 @@ import VideoList from './VideoList'
 
 interface IAppProps {
   isLoggedIn: boolean
-  fetchingMissingVideos: boolean
+  fetchingRemovedVideos: boolean
   playlists?: IPlaylist[]
 }
 
 class App extends React.Component<IAppProps> {
   public render() {
-    const { isLoggedIn, playlists, fetchingMissingVideos } = this.props
+    const { isLoggedIn, playlists, fetchingRemovedVideos } = this.props
     return (
       <div>
         <div
@@ -37,7 +37,7 @@ class App extends React.Component<IAppProps> {
             {isLoggedIn ? <LoggedIn /> : <LoggedOut />}
           </div>
         </div>
-        {fetchingMissingVideos && (
+        {fetchingRemovedVideos && (
           <Loader active={true} inline='centered'>
             Fetching videos
           </Loader>
@@ -55,7 +55,7 @@ class App extends React.Component<IAppProps> {
 const mapStateToProps = (state: IStoreState) => {
   return {
     isLoggedIn: state.isLoggedIn,
-    fetchingMissingVideos: state.fetchingMissingVideos,
+    fetchingRemovedVideos: state.fetchingRemovedVideos,
     playlists: state.playlists,
   }
 }

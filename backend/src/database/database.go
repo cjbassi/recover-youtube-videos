@@ -33,12 +33,10 @@ func (db *Database) HardMigrate() {
 	db.logger.Infof("Dropping tables if they exist...")
 
 	db.Connection.DropTableIfExists(&Video{}, &Playlist{}, &Channel{})
-	db.Connection.DropTableIfExists(&User{})
 
 	db.logger.Infof("Creating tables...")
 
 	db.Connection.CreateTable(&Channel{}, &Playlist{}, &Video{})
-	db.Connection.CreateTable(&User{})
 
 	db.Connection.Model(&Video{}).AddForeignKey("playlist_id", "playlists(id)", "RESTRICT", "RESTRICT")
 	db.Connection.Model(&Playlist{}).AddForeignKey("channel_id", "channels(id)", "RESTRICT", "RESTRICT")

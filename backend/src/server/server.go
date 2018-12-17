@@ -45,13 +45,11 @@ func Setup(logger *logrus.Entry, port string, db *database.Database, clientID st
 
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", s.healthz)
-	router.HandleFunc("/tokensignin", s.tokenSignIn).Methods("POST")
-	router.Handle("/fetchmissingvideos", s.authMiddleware(http.HandlerFunc(s.fetchMissingVideos))).Methods("POST")
+	router.Handle("/fetchremovedvideos", http.HandlerFunc(s.fetchRemovedVideos)).Methods("POST")
 
 	s.HTTPServer = http.Server{
-		Addr:    port,
-		Handler: (middlewares{s.tracing, s.logging, s.cors}).apply(router),
-		// ErrorLog:     logger,
+		Addr:         port,
+		Handler:      (middlewares{s.tracing, s.logging, s.cors}).apply(router),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  15 * time.Second,
