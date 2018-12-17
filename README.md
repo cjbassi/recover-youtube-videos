@@ -14,12 +14,12 @@ All videos are stored in the database on the first run, so future requests will 
 ## How it works
 
 1. Read-only permissions are granted by the user on the client side
-2. The client makes a request to the backend with the granted access_token
-3. All playlists and videos are read on the backend
-4. Videos are split into 2 groups depending on if they have been removed
+2. The client POSTs the granted access_token to the backend
+3. The backend uses the access_token to read all playlist videos
+4. The videos are split into 2 groups depending on if they have been removed
 5. Non-removed videos are stored in the database for potential later recovery
 6. Removed videos are checked against the database for matches and replaced with the match if there is one
-7. Removed videos are sent to the client
+7. Removed videos are returned to the client
 8. Videos that have been recovered are displayed normally, otherwise links are provided to search Google and Wayback Machine with the URL
 
 ## Development
