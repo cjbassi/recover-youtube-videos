@@ -2,25 +2,20 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"sync/atomic"
-	"time"
 
 	"github.com/cjbassi/recover-youtube-videos/backend/src/api"
 	. "github.com/cjbassi/recover-youtube-videos/backend/src/models"
 	. "github.com/cjbassi/recover-youtube-videos/backend/src/utils"
 )
 
-func (s *Server) healthz(w http.ResponseWriter, r *http.Request) {
-	if h := atomic.LoadInt64(&s.healthy); h == 0 {
-		w.WriteHeader(http.StatusServiceUnavailable)
-	} else {
-		w.Write([]byte(fmt.Sprintf("uptime: %s", time.Since(time.Unix(0, h)))))
-	}
+func (s *Server) statsRoute(w http.ResponseWriter, r *http.Request) {
+	stats := s.stats.Data()
+	b, _ := json.Marshal(stats)
+	w.Write(b)
 }
 
-func (s *Server) fetchRemovedVideos(w http.ResponseWriter, r *http.Request) {
+func (s *Server) fetchRemovedVideosRoute(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var body struct {
 		AccessToken string `json:"access_token"`

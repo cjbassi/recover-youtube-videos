@@ -3,7 +3,6 @@ module github.com/cjbassi/recover-youtube-videos/backend
 require (
 	cloud.google.com/go v0.34.0 // indirect
 	github.com/cjbassi/logrus-prefixed-formatter v0.5.3-0.20181216044418-3c873f791df4
-	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f // indirect
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
@@ -22,8 +21,10 @@ require (
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
+	github.com/rs/cors v1.6.0
 	github.com/sirupsen/logrus v1.2.0
-	github.com/sony/sonyflake v0.0.0-20181109022403-6d5bd6181009
+	github.com/thoas/stats v0.0.0-20181112204834-fc5c06ed3df0
+	github.com/urfave/negroni v1.0.0
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9 // indirect
 	golang.org/x/net v0.0.0-20181213202711-891ebc4b82d6 // indirect
