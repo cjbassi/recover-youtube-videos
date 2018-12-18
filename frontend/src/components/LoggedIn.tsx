@@ -53,9 +53,7 @@ class LoggedIn extends React.Component<ILoggedInProps> {
 
 const mapStateToProps = (state: IStoreState) => {
   return {
-    avatarURL: state.avatarURL,
-    userName: state.userName,
-    accessToken: state.accessToken,
+    ...state.userState,
   }
 }
 

@@ -5,15 +5,15 @@ import { List } from 'semantic-ui-react'
 import * as backend from '../api/backend'
 
 interface IVideoList {
-  playlists: backend.IPlaylist[]
+  removedVideos: backend.IPlaylist[]
 }
 
 class VideoList extends React.Component<IVideoList> {
   public render() {
-    const { playlists } = this.props
+    const { removedVideos } = this.props
     return (
       <List size={'massive'}>
-        {playlists.map((playlist: backend.IPlaylist) => (
+        {removedVideos.map((playlist: backend.IPlaylist) => (
           <List.Item key={playlist.id}>
             <List.Content>
               <List.Header>{playlist.title}</List.Header>
@@ -56,7 +56,7 @@ class VideoList extends React.Component<IVideoList> {
 
 const mapStateToProps = (state: IVideoList) => {
   return {
-    playlists: state.playlists,
+    removedVideos: state.removedVideos,
   }
 }
 

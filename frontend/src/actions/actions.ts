@@ -1,28 +1,25 @@
 import { action } from 'typesafe-actions'
 
 import { IPlaylist } from '../api/backend'
-import { ActionName } from '../constants'
+import { ActionName } from './index'
 
-export const coalesceGoogleSigninStatus = (
+export const signedIn = (
   userName: string,
   avatarURL: string,
   accessToken: string,
 ) =>
-  action(ActionName.coalesceGoogleSigninStatus, {
-    isLoggedIn: true,
+  action(ActionName.signedIn, {
     userName,
     avatarURL,
     accessToken,
   })
 
-export const coalesceGoogleSignoutStatus = () =>
-  action(ActionName.coalesceGoogleSignoutStatus, { isLoggedIn: false })
+export const signedOut = () => action(ActionName.signedOut)
 
-export const coalescePlaylists = (playlists: IPlaylist[]) =>
-  action(ActionName.coalescePlaylists, {
-    fetchingRemovedVideos: false,
-    playlists,
+export const fetchedRemovedVideos = (removedVideos: IPlaylist[]) =>
+  action(ActionName.fetchedRemovedVideos, {
+    removedVideos,
   })
 
 export const fetchingRemovedVideos = () =>
-  action(ActionName.fetchingRemovedVideos, { fetchingRemovedVideos: true })
+  action(ActionName.fetchingRemovedVideos)

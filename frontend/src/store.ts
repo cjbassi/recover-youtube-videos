@@ -5,11 +5,12 @@ import { IPlaylist } from './api/backend'
 import rootReducer from './reducers'
 
 export interface IStoreState {
-  avatarURL?: string
-  isLoggedIn: boolean
-  userName?: string
-  accessToken?: string
-  playlists?: IPlaylist[]
+  userState?: {
+    avatarURL?: string;
+    userName?: string;
+    accessToken?: string;
+  }
+  removedVideos?: IPlaylist[]
   fetchingRemovedVideos: boolean
 }
 

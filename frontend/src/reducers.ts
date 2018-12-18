@@ -1,13 +1,11 @@
-import { Action } from './actions'
-import { ActionName } from './constants'
+import produce from 'immer'
+
+import { Action, ActionName } from './actions'
 import { IStoreState } from './store'
 
 const initialState = {
-  avatarURL: undefined,
-  isLoggedIn: false,
-  userName: undefined,
-  accessToken: undefined,
-  playlists: undefined,
+  userState: undefined,
+  removedVideos: undefined,
   fetchingRemovedVideos: false,
 }
 
@@ -15,28 +13,21 @@ export default function rootReducer(
   state: IStoreState = initialState,
   action: Action,
 ): IStoreState {
-  switch (action.type) {
-    case ActionName.coalesceGoogleSigninStatus:
-      return {
-        ...state,
-        ...action.payload,
-      }
-    case ActionName.coalesceGoogleSignoutStatus:
-      return {
-        ...state,
-        ...action.payload,
-      }
-    case ActionName.coalescePlaylists:
-      return {
-        ...state,
-        ...action.payload,
-      }
-    case ActionName.fetchingRemovedVideos:
-      return {
-        ...state,
-        ...action.payload,
-      }
-    default:
-      return state
-  }
+  return produce(state, (draft: IStoreState) => {
+    switch (action.type) {
+      case ActionName.signedIn:
+        draft.userState = action.payload
+        return
+      case ActionName.signedOut:
+        draft.userState = undefined
+        return
+      case ActionName.fetchingRemovedVideos:
+        draft.fetchingRemovedVideos = true
+        return
+      case ActionName.fetchedRemovedVideos:
+        draft.removedVideos = action.payload.removedVideos
+        draft.fetchingRemovedVideos = false
+        return
+    }
+  })
 }

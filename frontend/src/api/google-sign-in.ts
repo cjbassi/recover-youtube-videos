@@ -35,11 +35,9 @@ function dispatchSigninStatusUpdate() {
     const userProfile = googleUser.getBasicProfile()
     const userName = userProfile.getName()
     const imageUrl = userProfile.getImageUrl()
-    Store.dispatch(
-      actions.coalesceGoogleSigninStatus(userName, imageUrl, accessToken),
-    )
+    Store.dispatch(actions.signedIn(userName, imageUrl, accessToken))
   } else {
-    Store.dispatch(actions.coalesceGoogleSignoutStatus())
+    Store.dispatch(actions.signedOut())
   }
 }
 

@@ -3,7 +3,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { Header, Loader } from 'semantic-ui-react'
 
-import { IPlaylist } from '../api/backend'
 import { REPO_URL } from '../constants'
 import { IStoreState } from '../store'
 import LoggedIn from './LoggedIn'
@@ -13,12 +12,16 @@ import VideoList from './VideoList'
 interface IAppProps {
   isLoggedIn: boolean
   fetchingRemovedVideos: boolean
-  playlists?: IPlaylist[]
+  existsRemovedVideos: boolean
 }
 
 class App extends React.Component<IAppProps> {
   public render() {
-    const { isLoggedIn, playlists, fetchingRemovedVideos } = this.props
+    const {
+      isLoggedIn,
+      existsRemovedVideos,
+      fetchingRemovedVideos,
+    } = this.props
     return (
       <div>
         <div
@@ -42,7 +45,7 @@ class App extends React.Component<IAppProps> {
             Fetching videos
           </Loader>
         )}
-        {playlists !== undefined && (
+        {existsRemovedVideos && (
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <VideoList />
           </div>
@@ -54,9 +57,9 @@ class App extends React.Component<IAppProps> {
 
 const mapStateToProps = (state: IStoreState) => {
   return {
-    isLoggedIn: state.isLoggedIn,
+    isLoggedIn: state.userState !== undefined,
     fetchingRemovedVideos: state.fetchingRemovedVideos,
-    playlists: state.playlists,
+    existsRemovedVideos: state.removedVideos !== undefined,
   }
 }
 
