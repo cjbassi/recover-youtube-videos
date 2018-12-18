@@ -28,7 +28,7 @@ func (s *Server) fetchRemovedVideos(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&body)
 	if err != nil {
 		s.logger.Errorf("failed to parse request body: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	service, err := api.Setup(body.AccessToken)
