@@ -1,3 +1,6 @@
+// https://gist.github.com/creack/4c00ee404f2d7bd5983382cc93af5147
+// https://gist.github.com/enricofoltran/10b4a980cd07cb02836f70a4ab3e72d7
+
 package server
 
 import (
