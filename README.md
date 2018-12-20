@@ -2,6 +2,8 @@
 
 A webapp that helps you recover privated or deleted videos from your YouTube playlists.
 
+**Note**: doesn't backup 'Watch Later' videos since that resouce isn't provided in the YouTube API
+
 ## Usage
 
 1. Visit the site
