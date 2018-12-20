@@ -26,3 +26,13 @@ All videos are added to a database on the first run, so future requests will hav
 
 Built with TypeScript, React, Redux, Redux Thunk, Go, and Postgres.  
 Backend is deployed on AWS Lambda using Serverless Framework and the frontend is hosted with GitHub Pages.
+
+## Deployment
+
+- setup a Google Cloud Platform project with the YouTube API enabled
+- download the API credentials to `backend/client_secrets.json`
+- copy the `client_id` to `frontend/.env.local` and `backend/.env`
+- setup an optional database and copy the URI to `backend/.env`
+- deploy the backend with `make deploy`
+- copy the backend URL to `frontend/.env.local`
+- deploy the frontend with `yarn deploy`
