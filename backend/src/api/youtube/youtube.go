@@ -91,7 +91,7 @@ func (s *YTService) FetchPlaylistItems(playlist *Playlist) error {
 				ID:        playlistItem.ContentDetails.VideoId,
 				Title:     playlistItem.Snippet.Title,
 				Position:  playlistItem.Snippet.Position,
-				Thumbnail: playlistItem.Snippet.Thumbnails.Default.Url,
+				Thumbnail: "", // TODO
 			}
 			playlist.PlaylistItems = append(playlist.PlaylistItems, myPlaylistItem)
 		}
