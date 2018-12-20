@@ -1,6 +1,4 @@
 .env
 client_secret.json
-*.zip
-./hard_migrate
-./recover_videos
-./soft_migrate
+bin/
+.serverless/

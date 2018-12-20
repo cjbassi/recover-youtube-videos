@@ -88,10 +88,10 @@ func (s *YTService) FetchPlaylistItems(playlist *Playlist) error {
 		}
 		for _, playlistItem := range playlistItemsResponse.Items {
 			myPlaylistItem := PlaylistItem{
-				ID:         playlistItem.ContentDetails.VideoId,
-				PlaylistID: playlist.ID,
-				Title:      playlistItem.Snippet.Title,
-				Position:   playlistItem.Snippet.Position,
+				ID:        playlistItem.ContentDetails.VideoId,
+				Title:     playlistItem.Snippet.Title,
+				Position:  playlistItem.Snippet.Position,
+				Thumbnail: playlistItem.Snippet.Thumbnails.Default.Url,
 			}
 			playlist.PlaylistItems = append(playlist.PlaylistItems, myPlaylistItem)
 		}

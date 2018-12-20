@@ -20,9 +20,9 @@ All videos are added to a database on the first run, so future requests will hav
 5. Non-removed videos are stored in the database for potential later recovery
 6. Removed videos are checked against the database for matches and replaced with the match if there is one
 7. Removed/recovered videos are returned to the client
-8. Videos are presented to the user, with links provided to search Google and Wayback Machine for unrecovered videos
+8. Videos are presented to the user, and unrecovered videos are supplemented with links to search Google and Wayback Machine for the video
 
 ## Development
 
 Built with TypeScript, React, Redux, Redux Thunk, Go, and Postgres.  
-Backend is deployed on AWS Lambda and the frontend is hosted with GitHub Pages.
+Backend is deployed on AWS Lambda using Serverless Framework and the frontend is hosted with GitHub Pages.

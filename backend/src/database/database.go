@@ -12,8 +12,11 @@ type DB struct {
 }
 
 func Setup(dbURI string) (*DB, error) {
-	_db, err := gorm.Open("postgres", dbURI)
-	return &DB{_db}, err
+	db, err := gorm.Open("postgres", dbURI)
+	if err != nil {
+		return nil, err
+	}
+	return &DB{db}, nil
 }
 
 func (db *DB) HardMigrate() {
