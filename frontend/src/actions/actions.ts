@@ -16,6 +16,8 @@ export const signedIn = (
 
 export const signedOut = () => action(ActionName.signedOut)
 
+export const fetchErrored = () => action(ActionName.fetchErrored)
+
 export const fetchedRemovedVideos = (removedVideos: IPlaylist[]) =>
   action(ActionName.fetchedRemovedVideos, {
     removedVideos,

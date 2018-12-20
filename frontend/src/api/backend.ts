@@ -1,15 +1,20 @@
 export async function fetchRemovedVideos(
   accessToken: string,
 ): Promise<IPlaylist[]> {
-  const response = await fetch(
-    process.env.REACT_APP_API_URL + '/fetchremovedvideos',
-    {
-      method: 'POST',
-      body: JSON.stringify({ access_token: accessToken }),
-      credentials: 'include',
-      mode: 'cors',
+  if (
+    process.env.REACT_APP_BACKEND_API_URL === undefined ||
+    process.env.REACT_APP_BACKEND_API_KEY === undefined
+  ) {
+    throw new Error('.env.production.local file is missing or misconfigured')
+  }
+  const response = await fetch(process.env.REACT_APP_BACKEND_API_URL, {
+    method: 'POST',
+    headers: {
+      'x-api-key': process.env.REACT_APP_BACKEND_API_KEY,
     },
-  )
+    mode: 'cors',
+    body: JSON.stringify({ access_token: accessToken }),
+  })
   return await response.json()
 }
 

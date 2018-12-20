@@ -28,6 +28,9 @@ export default function rootReducer(
         draft.removedVideos = action.payload.removedVideos
         draft.fetchingRemovedVideos = false
         return
+      case ActionName.fetchErrored:
+        draft.fetchingRemovedVideos = false
+        return
     }
   })
 }

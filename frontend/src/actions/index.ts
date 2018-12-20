@@ -11,4 +11,5 @@ export enum ActionName {
   signedOut = 'SIGNED_OUT',
   fetchedRemovedVideos = 'FETCHED_REMOVED_VIDEOS',
   fetchingRemovedVideos = 'FETCHING_REMOVED_VIDEOS',
+  fetchErrored = 'FETCH_ERRORED',
 }

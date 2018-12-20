@@ -8,9 +8,11 @@ export const fetchRemovedVideos = (accessToken: string) => async (
   dispatch: Dispatch<Action>,
 ) => {
   dispatch(actions.fetchingRemovedVideos())
-  return backend
-    .fetchRemovedVideos(accessToken)
-    .then((removedVideos) =>
-      dispatch(actions.fetchedRemovedVideos(removedVideos)),
-    )
+  try {
+    const removedVideos = await backend.fetchRemovedVideos(accessToken)
+    dispatch(actions.fetchedRemovedVideos(removedVideos))
+  } catch (e) {
+    console.error(e)
+    dispatch(actions.fetchErrored())
+  }
 }
