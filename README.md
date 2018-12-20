@@ -8,6 +8,8 @@ A webapp that helps you recover privated or deleted videos from your YouTube pla
 2. Login and grant read-only permissions to your YouTube account
 3. Click the 'Fetch removed videos' button
 4. Peruse the list of videos
+5. ????
+6. Profit
 
 All videos are added to a database on the first run, so future requests will have the database to help with recovering the videos.
 
