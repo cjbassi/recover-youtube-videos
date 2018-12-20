@@ -14,7 +14,7 @@ import (
 )
 
 type YTService struct {
-	service *youtube.Service
+	*youtube.Service
 }
 
 func Setup(access_token string) (*YTService, error) {
@@ -42,7 +42,7 @@ func (s *YTService) FetchPlaylists() ([]Playlist, error) {
 	playlists := []Playlist{}
 	nextPageToken := ""
 	for {
-		playlistCall := s.service.Playlists.List("snippet").Mine(true).MaxResults(50).PageToken(nextPageToken)
+		playlistCall := s.Playlists.List("snippet").Mine(true).MaxResults(50).PageToken(nextPageToken)
 		playlistResponse, err := playlistCall.Do()
 		if err != nil {
 			return nil, fmt.Errorf("failed to call api: %v", err)
@@ -85,7 +85,7 @@ func (s *YTService) FetchAllVideos() ([]Playlist, error) {
 }
 
 func (s *YTService) ChannelID() (string, error) {
-	channelCall := s.service.Channels.List("id").Mine(true)
+	channelCall := s.Channels.List("id").Mine(true)
 	channelResponse, err := channelCall.Do()
 	if err != nil {
 		return "", fmt.Errorf("failed to call api: %v", err)
@@ -96,7 +96,7 @@ func (s *YTService) ChannelID() (string, error) {
 func (s *YTService) FetchPlaylistItems(playlist *Playlist) error {
 	nextPageToken := ""
 	for {
-		playlistItemsCall := s.service.PlaylistItems.List("snippet,contentDetails").PlaylistId(playlist.ID).MaxResults(50).PageToken(nextPageToken)
+		playlistItemsCall := s.PlaylistItems.List("snippet,contentDetails").PlaylistId(playlist.ID).MaxResults(50).PageToken(nextPageToken)
 		playlistItemsResponse, err := playlistItemsCall.Do()
 		if err != nil {
 			return fmt.Errorf("failed to call api: %v", err)
