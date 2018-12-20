@@ -9,7 +9,7 @@ A webapp that helps you recover privated or deleted videos from your YouTube pla
 3. Click the 'Fetch removed videos' button
 4. Peruse the list of videos
 
-All videos are stored in the database on the first run, so future requests will have the database to help with recovering the videos.
+All videos are added to a database on the first run, so future requests will have the database to help with recovering the videos.
 
 ## How it works
 
@@ -25,16 +25,4 @@ All videos are stored in the database on the first run, so future requests will 
 ## Development
 
 Built with TypeScript, React, Redux, Redux Thunk, Go, and Postgres.  
-Backend is deployed with Docker on Heroku and the frontend is hosted with GitHub Pages.
-
-To run locally:
-
-- setup a Google Cloud Platform project with the YouTube API enabled
-- copy the API credentials to `backend/client_secrets.json`
-- setup the `.env` files with the `CLIENT_ID`
-- setup a local Postgres server:
-  - `docker run --name ryv-postgres -d -p 5432:5432 postgres`
-- start the React development server:
-  - `yarn; yarn start`
-- start the backend:
-  - `go run main.go`
+Backend is deployed on AWS Lambda and the frontend is hosted with GitHub Pages.

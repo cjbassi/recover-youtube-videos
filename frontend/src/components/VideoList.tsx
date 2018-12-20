@@ -18,7 +18,7 @@ class VideoList extends React.Component<IVideoList> {
             <List.Content>
               <List.Header>{playlist.title}</List.Header>
               <List>
-                {playlist.videos.map((video: backend.IVideo) => (
+                {playlist.playlistItems.map((video: backend.IPlaylistItem) => (
                   <List.Item key={video.id}>
                     <List.Icon
                       style={{

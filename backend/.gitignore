@@ -1,3 +1,6 @@
 .env
-.env.production
 client_secret.json
+*.zip
+./hard_migrate
+./recover_videos
+./soft_migrate

@@ -21,23 +21,23 @@ export async function fetchRemovedVideos(
 export interface IPlaylist {
   id: string
   title: string
-  videos: IVideo[]
+  playlistItems: IPlaylistItem[]
 }
 
-export interface IVideo {
+export interface IPlaylistItem {
   id: string
   title: string
   position: number
 }
 
-export function googleURL(video: IVideo) {
+export function googleURL(playlistItem: IPlaylistItem) {
   return `https://www.google.com/search?q=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${
-    video.id
+    playlistItem.id
   }`
 }
 
-export function waybackMachineURL(video: IVideo) {
+export function waybackMachineURL(playlistItem: IPlaylistItem) {
   return `https://web.archive.org/web/*/https://www.youtube.com/watch?v=${
-    video.id
+    playlistItem.id
   }`
 }

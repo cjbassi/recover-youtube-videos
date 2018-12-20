@@ -1,4 +1,4 @@
-package api
+package youtube
 
 import (
 	"context"
@@ -9,8 +9,6 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/youtube/v3"
-
-	. "github.com/cjbassi/recover-youtube-videos/backend/src/models"
 )
 
 type YTService struct {
@@ -45,16 +43,12 @@ func (s *YTService) FetchPlaylists() ([]Playlist, error) {
 		playlistCall := s.Playlists.List("snippet").Mine(true).MaxResults(50).PageToken(nextPageToken)
 		playlistResponse, err := playlistCall.Do()
 		if err != nil {
-			return nil, fmt.Errorf("failed to call api: %v", err)
+			return nil, fmt.Errorf("failed to execute api call: %v", err)
 		}
 		for _, playlist := range playlistResponse.Items {
 			myPlaylist := Playlist{
-				Title: playlist.Snippet.Title,
 				ID:    playlist.Id,
-				Channel: &Channel{
-					ID:   playlist.Snippet.ChannelId,
-					Name: playlist.Snippet.ChannelTitle,
-				},
+				Title: playlist.Snippet.Title,
 			}
 			playlists = append(playlists, myPlaylist)
 		}
@@ -84,30 +78,22 @@ func (s *YTService) FetchAllVideos() ([]Playlist, error) {
 	return playlists, err
 }
 
-func (s *YTService) ChannelID() (string, error) {
-	channelCall := s.Channels.List("id").Mine(true)
-	channelResponse, err := channelCall.Do()
-	if err != nil {
-		return "", fmt.Errorf("failed to call api: %v", err)
-	}
-	return channelResponse.Items[0].Id, nil
-}
-
 func (s *YTService) FetchPlaylistItems(playlist *Playlist) error {
 	nextPageToken := ""
 	for {
 		playlistItemsCall := s.PlaylistItems.List("snippet,contentDetails").PlaylistId(playlist.ID).MaxResults(50).PageToken(nextPageToken)
 		playlistItemsResponse, err := playlistItemsCall.Do()
 		if err != nil {
-			return fmt.Errorf("failed to call api: %v", err)
+			return fmt.Errorf("failed to execute api call: %v", err)
 		}
 		for _, playlistItem := range playlistItemsResponse.Items {
-			myPlaylistItem := Video{
-				Title:    playlistItem.Snippet.Title,
-				ID:       playlistItem.ContentDetails.VideoId,
-				Position: playlistItem.Snippet.Position,
+			myPlaylistItem := PlaylistItem{
+				ID:         playlistItem.ContentDetails.VideoId,
+				PlaylistID: playlist.ID,
+				Title:      playlistItem.Snippet.Title,
+				Position:   playlistItem.Snippet.Position,
 			}
-			playlist.Videos = append(playlist.Videos, myPlaylistItem)
+			playlist.PlaylistItems = append(playlist.PlaylistItems, myPlaylistItem)
 		}
 
 		nextPageToken = playlistItemsResponse.NextPageToken

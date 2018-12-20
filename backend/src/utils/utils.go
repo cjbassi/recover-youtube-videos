@@ -1,17 +1,17 @@
 package utils
 
 import (
-	. "github.com/cjbassi/recover-youtube-videos/backend/src/models"
+	"github.com/cjbassi/recover-youtube-videos/backend/src/api/youtube"
 )
 
-func SplitVideos(videos []Video) ([]Video, []Video) {
-	removed := make([]Video, 0)
-	notRemoved := make([]Video, 0)
-	for _, video := range videos {
-		if video.Title == "Deleted video" || video.Title == "Private video" {
-			removed = append(removed, video)
+func SplitPlaylistItems(items []youtube.PlaylistItem) ([]youtube.PlaylistItem, []youtube.PlaylistItem) {
+	removed := make([]youtube.PlaylistItem, 0)
+	notRemoved := make([]youtube.PlaylistItem, 0)
+	for _, item := range items {
+		if item.Title == "Deleted video" || item.Title == "Private video" {
+			removed = append(removed, item)
 		} else {
-			notRemoved = append(notRemoved, video)
+			notRemoved = append(notRemoved, item)
 		}
 	}
 	return removed, notRemoved
