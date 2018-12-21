@@ -33,10 +33,10 @@ Backend is deployed on AWS Lambda using Serverless Framework and the frontend is
 
 ## Deployment
 
-- setup a Google Cloud Platform project with the YouTube API enabled
-- download the API credentials to `backend/client_secrets.json`
-- copy the `client_id` to `frontend/.env.local` and `backend/.env`
-- setup an optional database and copy the URI to `backend/.env`
-- deploy the backend with `make deploy`
-- copy the backend URL to `frontend/.env.local`
-- deploy the frontend with `yarn deploy`
+1. setup a Google Cloud Platform project with the YouTube API enabled
+2. download the API credentials to `backend/client_secrets.json`
+3. copy the `client_id` to `frontend/.env.local` and `backend/.env`
+4. setup an optional database and copy the URI to `backend/.env`
+5. deploy the backend with `make deploy`
+6. copy the backend URL to `frontend/.env.local`
+7. deploy the frontend with `yarn deploy`
