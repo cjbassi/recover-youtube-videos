@@ -1,0 +1,10 @@
+[Unit]
+Description=Run recover-youtube-videos daily
+
+[Timer]
+OnBootSec=5min
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

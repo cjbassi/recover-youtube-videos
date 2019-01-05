@@ -1,0 +1,6 @@
+[Unit]
+Description=Run recover-youtube-videos
+
+[Service]
+Type=oneshot
+ExecStart=<GOBIN_PATH>/recover-youtube-videos <DATA_DIRECTORY_PATH>

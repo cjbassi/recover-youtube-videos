@@ -1,42 +1,37 @@
-# [recover-youtube-videos](https://recover-youtube-videos.xyz)
+# recover-youtube-videos
 
-A webapp that helps you recover privated or deleted videos from your YouTube playlists.
+A cli app that helps you recover privated and deleted videos from your YouTube playlists.
 
-**Note**: doesn't backup 'Watch Later' videos since that resouce isn't provided in the YouTube API
+Creates a json database file on first run that stores the metadata of all playlist videos of a given account, so that any videos that go missing in the future can at least have their name recovered.
+
+**Note**: 'Watch Later' videos are not backed up since that resource isn't provided by the YouTube API.
 
 ## Usage
 
-1. Visit the site
-2. Login and grant read-only permissions to your YouTube account
-3. Click the 'Fetch removed videos' button
-4. Peruse the list of videos
-5. ????
-6. Profit
+1. Install the app: `go get github.com/cjbassi/recover-youtube-videos`
+2. Setup a Google Cloud Platform project with the YouTube api enabled
+3. Create a folder to store the app data
+4. Download the API credentials into the folder and name it `client_secrets.json`
+5. Run the app with the folder path as a cli argument
 
-All videos are added to a database on the first run, so future requests will have the database to help with recovering the videos.
+Several files will be created:
 
-## How it works
+- `library.json`: acts as a database for playlist videos
+- `recovered_videos.json`: videos that have been recovered after checking `library.json`
+- `unrecovered_videos.json`: videos that were deleted before `library.json` was created
+- `credentials.json`: caches user authorization
 
-1. Read-only permissions are granted by the user on the client side
-2. The client `POST`s the granted `access_token` to the backend
-3. The backend uses the `access_token` to request all playlist videos from the YouTube api
-4. The videos are split into 2 groups depending on if they have been removed
-5. Non-removed videos are stored in the database for potential later recovery
-6. Removed videos are checked against the database for matches and replaced with the match if there is one
-7. Removed/recovered videos are returned to the client
-8. Videos are presented to the user, and unrecovered videos are supplemented with links to search Google and Wayback Machine for the video
+**Note**: Unrecovered videos can sometimes be recovered by checking Wayback Machine and Google using the video url.
 
-## Development
+## Automated run
 
-Built with TypeScript, React, Redux, Redux Thunk, Go, and Postgres.  
-Backend is deployed on AWS Lambda using Serverless Framework and the frontend is hosted with GitHub Pages.
+It's recommended to setup a cron job or systemd timer that runs the program for you, making it so that the library database is kept up to date with newly added videos.
 
-## Deployment
+A systemd timer file is located [here](./systemd/recover-youtube-videos.timer) along with the service file [here](./systemd/recover-youtube-videos.service).
 
-1. setup a Google Cloud Platform project with the YouTube API enabled
-2. download the API credentials to `backend/client_secrets.json`
-3. copy the `client_id` to `frontend/.env.local` and `backend/.env`
-4. setup an optional database and copy the URI to `backend/.env`
-5. deploy the backend with `make deploy`
-6. copy the backend URL to `frontend/.env.local`
-7. deploy the frontend with `yarn deploy`
+To setup the systemd timer:
+
+1. Copy both files to `~/.config/systemd/user/`
+2. Replace the command path and cli arg in `recover-youtube-videos.service`
+3. Run `systemctl --user daemon-reload`
+4. Run `systemctl --user enable --now recover-youtube-videos.timer`
