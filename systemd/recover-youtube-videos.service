@@ -3,6 +3,5 @@ Description=Run recover-youtube-videos
 
 [Service]
 Type=oneshot
+ExecStartPre=sleep 30
 ExecStart=<GOBIN_PATH>/recover-youtube-videos <DATA_DIRECTORY_PATH>
-Restart=on-failure
-RestartSec=5min
