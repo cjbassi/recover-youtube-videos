@@ -15,9 +15,18 @@ import (
 
 var (
 	SCOPE               = youtube.YoutubeReadonlyScope
-	CLIENT_SECRETS_FILE = filepath.Join(os.Args[1], "client_secrets.json")
-	CREDENTIALS_FILE    = filepath.Join(os.Args[1], "credentials.json")
+	CLIENT_SECRETS_FILE string
+	CREDENTIALS_FILE    string
 )
+
+func init() {
+	log.SetFlags(0)
+	if len(os.Args) < 2 {
+		log.Fatal("Error: A folder path must be given as a cli argument.")
+	}
+	CLIENT_SECRETS_FILE = filepath.Join(os.Args[1], "client_secrets.json")
+	CREDENTIALS_FILE = filepath.Join(os.Args[1], "credentials.json")
+}
 
 // getTokenFromWeb uses Config to request a Token.
 // It returns the retrieved Token.

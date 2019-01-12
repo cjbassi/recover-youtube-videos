@@ -14,10 +14,16 @@ import (
 )
 
 var (
-	LIBRARY_FILE            = filepath.Join(os.Args[1], "library.json")
-	RECOVERED_VIDEOS_FILE   = filepath.Join(os.Args[1], "recovered_videos.json")
-	UNRECOVERED_VIDEOS_FILE = filepath.Join(os.Args[1], "unrecovered_videos.json")
+	LIBRARY_FILE            string
+	RECOVERED_VIDEOS_FILE   string
+	UNRECOVERED_VIDEOS_FILE string
 )
+
+func init() {
+	LIBRARY_FILE = filepath.Join(os.Args[1], "library.json")
+	RECOVERED_VIDEOS_FILE = filepath.Join(os.Args[1], "recovered_videos.json")
+	UNRECOVERED_VIDEOS_FILE = filepath.Join(os.Args[1], "unrecovered_videos.json")
+}
 
 func partitionPlaylistItems(playlistItems []PlaylistItem) ([]PlaylistItem, []PlaylistItem) {
 	removed := []PlaylistItem{}
