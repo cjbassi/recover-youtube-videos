@@ -75,11 +75,11 @@ func main() {
 		}
 	}
 
-	notRemovedPlaylistItemsJSON, err := json.MarshalIndent(notRemovedVideos, "", "    ")
+	notRemovedVideosJSON, err := json.MarshalIndent(notRemovedVideos, "", "    ")
 	if err != nil {
 		log.Fatalf("failed to marshal library videos: %v", err)
 	}
-	err = ioutil.WriteFile(LIBRARY_FILE, notRemovedPlaylistItemsJSON, 0644)
+	err = ioutil.WriteFile(LIBRARY_FILE, notRemovedVideosJSON, 0644)
 	if err != nil {
 		log.Fatalf("failed to write library file: %v", err)
 	}
