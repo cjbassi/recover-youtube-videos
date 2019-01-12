@@ -53,14 +53,17 @@ func main() {
 		log.Fatalf("Error creating YouTube client: %v", err)
 	}
 
+	var library []Video
 	libraryBytes, err := ioutil.ReadFile(LIBRARY_FILE)
 	if err != nil {
-		log.Fatalf("failed to read library file: %v", err)
-	}
-	var library []Video
-	err = json.Unmarshal(libraryBytes, &library)
-	if err != nil {
-		log.Fatalf("failed to unmarshal library file: %v", err)
+		if !os.IsNotExist(err) {
+			log.Fatalf("failed to read library file: %v", err)
+		}
+	} else {
+		err = json.Unmarshal(libraryBytes, &library)
+		if err != nil {
+			log.Fatalf("failed to unmarshal library file: %v", err)
+		}
 	}
 
 	playlists, err := FetchAllPlaylistItems(service)
@@ -90,14 +93,17 @@ func main() {
 		log.Fatalf("failed to write library file: %v", err)
 	}
 
+	var previouslyRecoveredPlaylistItems []Playlist
 	previouslyRecoveredPlaylistItemsBytes, err := ioutil.ReadFile(RECOVERED_VIDEOS_FILE)
 	if err != nil {
-		log.Fatalf("failed to read recovered_videos file: %v", err)
-	}
-	var previouslyRecoveredPlaylistItems []Playlist
-	err = json.Unmarshal(previouslyRecoveredPlaylistItemsBytes, &previouslyRecoveredPlaylistItems)
-	if err != nil {
-		log.Fatalf("failed to unmarshal recovered_videos file: %v", err)
+		if !os.IsNotExist(err) {
+			log.Fatalf("failed to read recovered_videos file: %v", err)
+		}
+	} else {
+		err = json.Unmarshal(previouslyRecoveredPlaylistItemsBytes, &previouslyRecoveredPlaylistItems)
+		if err != nil {
+			log.Fatalf("failed to unmarshal recovered_videos file: %v", err)
+		}
 	}
 	previouslyRecoveredVideos := []Video{}
 	for _, playlist := range previouslyRecoveredPlaylistItems {
