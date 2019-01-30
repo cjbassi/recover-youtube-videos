@@ -12,14 +12,14 @@ Creates a json database file on first run that stores the metadata of all playli
 2. Setup a Google Cloud Platform project with the YouTube api enabled
 3. Create a folder to store the app data
 4. Download the API credentials into the folder and name it `client_secret.json`
-5. Run the app with the folder path as a cli argument
+5. Run the app with the folder path as a cli argument (and authenticate on first run)
 
 Several files will be created:
 
 - `library.json`: acts as a database for playlist videos
 - `recovered_videos.json`: videos that have been recovered after checking `library.json`
 - `unrecovered_videos.json`: videos that were deleted before `library.json` was created
-- `credentials.json`: caches user authorization
+- `token_store.json`: caches user authorization
 
 **Note**: Unrecovered videos can sometimes be recovered by checking Wayback Machine and Google using the video url.
 
