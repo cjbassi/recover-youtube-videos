@@ -8,10 +8,10 @@ Creates a json database file on first run that stores the metadata of all playli
 
 ## Usage
 
-1. Install the app: `go get github.com/cjbassi/recover-youtube-videos`
+1. Install the app: `cargo install --git https://github.com/cjbassi/recover-youtube-videos`
 2. Setup a Google Cloud Platform project with the YouTube api enabled
 3. Create a folder to store the app data
-4. Download the API credentials into the folder and name it `client_secrets.json`
+4. Download the API credentials into the folder and name it `client_secret.json`
 5. Run the app with the folder path as a cli argument
 
 Several files will be created:

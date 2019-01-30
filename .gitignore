@@ -1,5 +1,8 @@
-client_secrets.json
+/target
+**/*.rs.bk
+
+client_secret.json
 library.json
 recovered_videos.json
 unrecovered_videos.json
-credentials.json
+token_store.json
