@@ -1,5 +1,5 @@
-mod youtube;
 mod args;
+mod youtube;
 
 use structopt::StructOpt;
 
@@ -17,7 +17,8 @@ fn main() {
 
     std::env::set_current_dir(args.directory).unwrap();
 
-    let secret = oauth2::read_application_secret(&std::path::PathBuf::from(CLIENT_SECRET_FILE)).unwrap();
+    let secret =
+        oauth2::read_application_secret(&std::path::PathBuf::from(CLIENT_SECRET_FILE)).unwrap();
 
     let client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(
         hyper_rustls::TlsClient::new(),
@@ -61,8 +62,7 @@ fn main() {
         }
     }
 
-    let mut local_library: Vec<youtube::Video> = match std::path::Path::new(LIBRARY_FILE).exists()
-    {
+    let mut local_library: Vec<youtube::Video> = match std::path::Path::new(LIBRARY_FILE).exists() {
         true => json::from_str(&std::fs::read_to_string(LIBRARY_FILE).unwrap()).unwrap(),
         false => vec![],
     };
@@ -100,8 +100,12 @@ fn main() {
                 }
             }
             match recovered {
-                true => playlist_of_recovered_videos.playlist_items.push(playlist_item),
-                false => playlist_of_unrecovered_videos.playlist_items.push(playlist_item),
+                true => playlist_of_recovered_videos
+                    .playlist_items
+                    .push(playlist_item),
+                false => playlist_of_unrecovered_videos
+                    .playlist_items
+                    .push(playlist_item),
             }
         }
         if playlist_of_recovered_videos.playlist_items.len() > 0 {
