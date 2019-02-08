@@ -10,7 +10,7 @@ Creates a json database file on first run that stores the metadata of all playli
 
 ### Prebuilt binaries:
 
-Downloads the correct binary from the releases tab into `$CARGO_HOME/bin`: (currently only x86_64 Linux is prebuilt)
+Run the following to download the correct binary for your system from the releases tab into `$CARGO_HOME/bin`: (currently only Linux-x86_64 is available)
 
 ```
 bash <(curl https://raw.githubusercontent.com/japaric/trust/c268696ab9f054e1092f195dddeead2420c04261/install.sh) -f --git cjbassi/recover-youtube-videos

@@ -1,17 +1,10 @@
+use crate::{BoxResult, Hub};
 use serde_derive::{Deserialize, Serialize};
 
 const MAX_RESULTS: u32 = 50;
 
-type Hub = youtube3::YouTube<
-    hyper::Client,
-    oauth2::Authenticator<
-        oauth2::DefaultAuthenticatorDelegate,
-        oauth2::DiskTokenStorage,
-        hyper::Client,
-    >,
->;
-
-type Library = Vec<Playlist>;
+pub type Playlists = Vec<Playlist>;
+pub type Videos = Vec<Video>;
 
 #[derive(Serialize, Deserialize)]
 pub struct Playlist {
@@ -20,7 +13,7 @@ pub struct Playlist {
     pub playlist_items: Vec<PlaylistItem>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct PlaylistItem {
     pub title: String,
     pub id: String,
@@ -43,8 +36,8 @@ impl Clone for Playlist {
     }
 }
 
-impl From<youtube3::Playlist> for Playlist {
-    fn from(playlist: youtube3::Playlist) -> Self {
+impl From<google_youtube3::Playlist> for Playlist {
+    fn from(playlist: google_youtube3::Playlist) -> Self {
         Playlist {
             title: playlist.snippet.unwrap().title.unwrap(),
             id: playlist.id.unwrap(),
@@ -53,8 +46,8 @@ impl From<youtube3::Playlist> for Playlist {
     }
 }
 
-impl From<youtube3::PlaylistItem> for PlaylistItem {
-    fn from(playlist_item: youtube3::PlaylistItem) -> Self {
+impl From<google_youtube3::PlaylistItem> for PlaylistItem {
+    fn from(playlist_item: google_youtube3::PlaylistItem) -> Self {
         let snippet = playlist_item.snippet.unwrap();
         PlaylistItem {
             title: snippet.title.unwrap(),
@@ -79,7 +72,7 @@ impl From<PlaylistItem> for Video {
     }
 }
 
-fn fetch_playlists(hub: &mut Hub) -> Result<Vec<youtube3::Playlist>, core::fmt::Error> {
+fn fetch_playlists(hub: &mut Hub) -> BoxResult<Vec<google_youtube3::Playlist>> {
     let mut page_token = String::new();
     let mut playlists = vec![];
     loop {
@@ -103,7 +96,7 @@ fn fetch_playlists(hub: &mut Hub) -> Result<Vec<youtube3::Playlist>, core::fmt::
 fn fetch_playlist_items(
     hub: &mut Hub,
     playlist_id: &str,
-) -> Result<Vec<youtube3::PlaylistItem>, core::fmt::Error> {
+) -> BoxResult<Vec<google_youtube3::PlaylistItem>> {
     let mut page_token = String::new();
     let mut playlist_items = vec![];
     loop {
@@ -124,7 +117,7 @@ fn fetch_playlist_items(
     Ok(playlist_items)
 }
 
-pub fn fetch_library(hub: &mut Hub) -> Result<Library, core::fmt::Error> {
+pub fn fetch_library(hub: &mut Hub) -> BoxResult<Playlists> {
     let playlists = fetch_playlists(hub)
         .unwrap()
         .into_iter()
