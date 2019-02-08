@@ -6,9 +6,25 @@ Creates a json database file on first run that stores the metadata of all playli
 
 **Note**: 'Watch Later' videos are not backed up since that resource isn't provided by the YouTube API.
 
+## Installation
+
+### Prebuilt binaries:
+
+Downloads the correct binary from the releases tab into `$CARGO_HOME/bin`: (currently only x86_64 Linux is prebuilt)
+
+```
+bash <(curl https://raw.githubusercontent.com/japaric/trust/c268696ab9f054e1092f195dddeead2420c04261/install.sh) -f --git cjbassi/recover-youtube-videos
+```
+
+### From source:
+
+```
+cargo install --git https://github.com/cjbassi/recover-youtube-videos
+```
+
 ## Usage
 
-1. Install the app: `cargo install --git https://github.com/cjbassi/recover-youtube-videos`
+1. Install the app
 2. Setup a Google Cloud Platform project with the YouTube api enabled
 3. Create a folder to store the app data
 4. Download the API credentials into the folder and name it `client_secret.json`
