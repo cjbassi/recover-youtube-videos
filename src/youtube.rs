@@ -126,7 +126,7 @@ pub fn fetch_library(hub: &mut Hub) -> BoxResult<Playlists> {
             new_pl.playlist_items = fetch_playlist_items(hub, &new_pl.id)
                 .unwrap()
                 .into_iter()
-                .map(|playlist_item| PlaylistItem::from(playlist_item))
+                .map(PlaylistItem::from)
                 .collect();
             new_pl
         })

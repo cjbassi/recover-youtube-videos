@@ -69,13 +69,8 @@ fn filter_removed_videos(
                 .playlist_items
                 .into_iter()
                 .partition(|playlist_item| playlist_item.removed());
-        non_removed_videos.append(
-            &mut non_removed
-                .into_iter()
-                .map(|playlist_item| youtube::Video::from(playlist_item))
-                .collect(),
-        );
-        if removed.len() > 0 {
+        non_removed_videos.append(&mut non_removed.into_iter().map(youtube::Video::from).collect());
+        if !removed.is_empty() {
             pl_copy.playlist_items = removed;
             playlists_of_removed_playlist_items.push(pl_copy);
         }
@@ -84,13 +79,14 @@ fn filter_removed_videos(
 }
 
 fn get_known_videos() -> BoxResult<youtube::Videos> {
-    let mut local_library: youtube::Videos = match Path::new(LIBRARY_FILE).exists() {
-        true => serde_json::from_str(&std::fs::read_to_string(LIBRARY_FILE)?)?,
-        false => vec![],
+    let mut local_library: youtube::Videos = if Path::new(LIBRARY_FILE).exists() {
+        serde_json::from_str(&std::fs::read_to_string(LIBRARY_FILE)?)?
+    } else {
+        vec![]
     };
     let mut previously_recovered_videos: youtube::Videos =
-        match std::path::Path::new(RECOVERED_VIDEOS_FILE).exists() {
-            true => serde_json::from_str::<Vec<youtube::Playlist>>(&fs::read_to_string(
+        if std::path::Path::new(RECOVERED_VIDEOS_FILE).exists() {
+            serde_json::from_str::<Vec<youtube::Playlist>>(&fs::read_to_string(
                 RECOVERED_VIDEOS_FILE,
             )?)?
             .into_iter()
@@ -98,19 +94,20 @@ fn get_known_videos() -> BoxResult<youtube::Videos> {
                 playlist
                     .playlist_items
                     .into_iter()
-                    .map(|playlist_item| youtube::Video::from(playlist_item))
+                    .map(youtube::Video::from)
                     .collect::<youtube::Videos>()
             })
-            .collect(),
-            false => vec![],
+            .collect()
+        } else {
+            vec![]
         };
     local_library.append(&mut previously_recovered_videos);
     Ok(local_library)
 }
 
 fn filter_recovered_videos(
-    playlists_of_removed_playlist_items: &youtube::Playlists,
-    local_library: &youtube::Videos,
+    playlists_of_removed_playlist_items: &[youtube::Playlist],
+    local_library: &[youtube::Video],
 ) -> (youtube::Playlists, youtube::Playlists) {
     let mut playlists_of_recovered_videos: youtube::Playlists = vec![];
     let mut playlists_of_unrecovered_videos: youtube::Playlists = vec![];
@@ -127,15 +124,16 @@ fn filter_recovered_videos(
                     break;
                 }
             }
-            match recovered {
-                true => playlist_of_recovered_videos.playlist_items.push(clone),
-                false => playlist_of_unrecovered_videos.playlist_items.push(clone),
+            if recovered {
+                playlist_of_recovered_videos.playlist_items.push(clone)
+            } else {
+                playlist_of_unrecovered_videos.playlist_items.push(clone)
             }
         }
-        if playlist_of_recovered_videos.playlist_items.len() > 0 {
+        if !playlist_of_recovered_videos.playlist_items.is_empty() {
             playlists_of_recovered_videos.push(playlist_of_recovered_videos)
         }
-        if playlist_of_unrecovered_videos.playlist_items.len() > 0 {
+        if !playlist_of_unrecovered_videos.playlist_items.is_empty() {
             playlists_of_unrecovered_videos.push(playlist_of_unrecovered_videos)
         }
     }
@@ -152,9 +150,10 @@ fn main() {
 
     let mut hub = get_youtube_hub().unwrap();
 
-    let fetched_library = match args.debug {
-        true => serde_json::from_str(&fs::read_to_string(MOCK_API_FILE).unwrap()).unwrap(),
-        false => youtube::fetch_library(&mut hub).unwrap(),
+    let fetched_library = if args.debug {
+        serde_json::from_str(&fs::read_to_string(MOCK_API_FILE).unwrap()).unwrap()
+    } else {
+        youtube::fetch_library(&mut hub).unwrap()
     };
 
     let (non_removed_videos, playlists_of_removed_playlist_items) =
