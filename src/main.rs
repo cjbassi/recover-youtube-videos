@@ -1,4 +1,5 @@
 mod args;
+mod utils;
 mod youtube;
 
 use std::env;
@@ -6,6 +7,8 @@ use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
+
+use utils::json_to_file;
 
 const CLIENT_SECRET_FILE: &str = "client_secret.json";
 const TOKEN_STORE_FILE: &str = "token_store.json";
@@ -16,7 +19,8 @@ const UNRECOVERED_VIDEOS_FILE: &str = "unrecovered_videos.json";
 
 const MOCK_API_FILE: &str = "test/mock_api.json";
 
-type BoxResult<T> = Result<T, Box<Error>>;
+type Result<T> = std::result::Result<T, Box<Error>>;
+
 type Hub = google_youtube3::YouTube<
     hyper::Client,
     yup_oauth2::Authenticator<
@@ -26,16 +30,7 @@ type Hub = google_youtube3::YouTube<
     >,
 >;
 
-fn json_to_file<T>(filename: &str, json: &T) -> BoxResult<()>
-where
-    T: serde::ser::Serialize,
-{
-    let j = serde_json::to_string_pretty(json)?;
-    std::fs::write(filename, j)?;
-    Ok(())
-}
-
-fn get_youtube_hub() -> BoxResult<Hub> {
+fn create_youtube_hub() -> Result<Hub> {
     let secret = yup_oauth2::read_application_secret(&PathBuf::from(CLIENT_SECRET_FILE))?;
 
     let client = hyper::Client::with_connector(hyper::net::HttpsConnector::new(
@@ -57,10 +52,37 @@ fn get_youtube_hub() -> BoxResult<Hub> {
     Ok(hub)
 }
 
-fn filter_removed_videos(
-    fetched_library: youtube::Playlists,
-) -> (youtube::Videos, youtube::Playlists) {
-    let mut non_removed_videos: youtube::Videos = vec![];
+fn get_known_videos() -> Result<Vec<youtube::Video>> {
+    let mut local_library: Vec<youtube::Video> = if Path::new(LIBRARY_FILE).exists() {
+        serde_json::from_str(&std::fs::read_to_string(LIBRARY_FILE)?)?
+    } else {
+        vec![]
+    };
+    let mut previously_recovered_videos: Vec<youtube::Video> =
+        if std::path::Path::new(RECOVERED_VIDEOS_FILE).exists() {
+            serde_json::from_str::<Vec<youtube::Playlist>>(&fs::read_to_string(
+                RECOVERED_VIDEOS_FILE,
+            )?)?
+            .into_iter()
+            .flat_map(|playlist| {
+                playlist
+                    .playlist_items
+                    .into_iter()
+                    .map(youtube::Video::from)
+                    .collect::<Vec<youtube::Video>>()
+            })
+            .collect()
+        } else {
+            vec![]
+        };
+    local_library.append(&mut previously_recovered_videos);
+    Ok(local_library)
+}
+
+fn partition_removed_videos(
+    fetched_library: Vec<youtube::Playlist>,
+) -> (Vec<youtube::Video>, Vec<youtube::Playlist>) {
+    let mut non_removed_videos: Vec<youtube::Video> = vec![];
     let mut playlists_of_removed_playlist_items: Vec<youtube::Playlist> = vec![];
     for playlist in fetched_library {
         let mut pl_copy = playlist.clone();
@@ -78,56 +100,32 @@ fn filter_removed_videos(
     (non_removed_videos, playlists_of_removed_playlist_items)
 }
 
-fn get_known_videos() -> BoxResult<youtube::Videos> {
-    let mut local_library: youtube::Videos = if Path::new(LIBRARY_FILE).exists() {
-        serde_json::from_str(&std::fs::read_to_string(LIBRARY_FILE)?)?
-    } else {
-        vec![]
-    };
-    let mut previously_recovered_videos: youtube::Videos =
-        if std::path::Path::new(RECOVERED_VIDEOS_FILE).exists() {
-            serde_json::from_str::<Vec<youtube::Playlist>>(&fs::read_to_string(
-                RECOVERED_VIDEOS_FILE,
-            )?)?
-            .into_iter()
-            .flat_map(|playlist| {
-                playlist
-                    .playlist_items
-                    .into_iter()
-                    .map(youtube::Video::from)
-                    .collect::<youtube::Videos>()
-            })
-            .collect()
-        } else {
-            vec![]
-        };
-    local_library.append(&mut previously_recovered_videos);
-    Ok(local_library)
-}
-
-fn filter_recovered_videos(
-    playlists_of_removed_playlist_items: &[youtube::Playlist],
+fn partition_recovered_videos(
+    playlists_of_removed_playlist_items: Vec<youtube::Playlist>,
     local_library: &[youtube::Video],
-) -> (youtube::Playlists, youtube::Playlists) {
-    let mut playlists_of_recovered_videos: youtube::Playlists = vec![];
-    let mut playlists_of_unrecovered_videos: youtube::Playlists = vec![];
+) -> (Vec<youtube::Playlist>, Vec<youtube::Playlist>) {
+    let mut playlists_of_recovered_videos: Vec<youtube::Playlist> = vec![];
+    let mut playlists_of_unrecovered_videos: Vec<youtube::Playlist> = vec![];
     for playlist in playlists_of_removed_playlist_items {
         let mut playlist_of_recovered_videos: youtube::Playlist = playlist.clone();
         let mut playlist_of_unrecovered_videos: youtube::Playlist = playlist.clone();
-        for playlist_item in &playlist.playlist_items {
-            let mut clone = (*playlist_item).clone();
+        for mut playlist_item in playlist.playlist_items {
             let mut recovered = false;
             for video in local_library {
-                if clone.id == video.id {
-                    clone.title = video.title.to_owned();
+                if playlist_item.id == video.id {
+                    playlist_item.title = video.title.to_owned();
                     recovered = true;
                     break;
                 }
             }
             if recovered {
-                playlist_of_recovered_videos.playlist_items.push(clone)
+                playlist_of_recovered_videos
+                    .playlist_items
+                    .push(playlist_item)
             } else {
-                playlist_of_unrecovered_videos.playlist_items.push(clone)
+                playlist_of_unrecovered_videos
+                    .playlist_items
+                    .push(playlist_item)
             }
         }
         if !playlist_of_recovered_videos.playlist_items.is_empty() {
@@ -148,7 +146,7 @@ fn main() {
 
     env::set_current_dir(args.directory).unwrap();
 
-    let mut hub = get_youtube_hub().unwrap();
+    let mut hub = create_youtube_hub().unwrap();
 
     let fetched_library = if args.debug {
         serde_json::from_str(&fs::read_to_string(MOCK_API_FILE).unwrap()).unwrap()
@@ -157,10 +155,10 @@ fn main() {
     };
 
     let (non_removed_videos, playlists_of_removed_playlist_items) =
-        filter_removed_videos(fetched_library);
+        partition_removed_videos(fetched_library);
     let local_library = get_known_videos().unwrap();
     let (playlists_of_recovered_videos, playlists_of_unrecovered_videos) =
-        filter_recovered_videos(&playlists_of_removed_playlist_items, &local_library);
+        partition_recovered_videos(playlists_of_removed_playlist_items, &local_library);
 
     json_to_file(LIBRARY_FILE, &non_removed_videos).unwrap();
     json_to_file(RECOVERED_VIDEOS_FILE, &playlists_of_recovered_videos).unwrap();

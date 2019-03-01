@@ -1,10 +1,9 @@
-use crate::{BoxResult, Hub};
 use serde_derive::{Deserialize, Serialize};
 
-const MAX_RESULTS: u32 = 50;
+use crate::{Hub, Result};
 
-pub type Playlists = Vec<Playlist>;
-pub type Videos = Vec<Video>;
+// only 50 items can be returned per youtube query
+const MAX_RESULTS: u32 = 50;
 
 #[derive(Serialize, Deserialize)]
 pub struct Playlist {
@@ -72,7 +71,7 @@ impl From<PlaylistItem> for Video {
     }
 }
 
-fn fetch_playlists(hub: &mut Hub) -> BoxResult<Vec<google_youtube3::Playlist>> {
+fn fetch_playlists(hub: &mut Hub) -> Result<Vec<google_youtube3::Playlist>> {
     let mut page_token = String::new();
     let mut playlists = vec![];
     loop {
@@ -96,7 +95,7 @@ fn fetch_playlists(hub: &mut Hub) -> BoxResult<Vec<google_youtube3::Playlist>> {
 fn fetch_playlist_items(
     hub: &mut Hub,
     playlist_id: &str,
-) -> BoxResult<Vec<google_youtube3::PlaylistItem>> {
+) -> Result<Vec<google_youtube3::PlaylistItem>> {
     let mut page_token = String::new();
     let mut playlist_items = vec![];
     loop {
@@ -117,7 +116,7 @@ fn fetch_playlist_items(
     Ok(playlist_items)
 }
 
-pub fn fetch_library(hub: &mut Hub) -> BoxResult<Playlists> {
+pub fn fetch_library(hub: &mut Hub) -> Result<Vec<Playlist>> {
     let playlists = fetch_playlists(hub)
         .unwrap()
         .into_iter()
