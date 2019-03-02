@@ -164,3 +164,14 @@ fn main() {
     json_to_file(RECOVERED_VIDEOS_FILE, &playlists_of_recovered_videos).unwrap();
     json_to_file(UNRECOVERED_VIDEOS_FILE, &playlists_of_unrecovered_videos).unwrap();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_partition_removed_videos() {}
+
+    #[test]
+    fn test_partition_recovered_videos() {}
+}
