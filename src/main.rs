@@ -144,14 +144,17 @@ fn partition_recovered_videos(
 fn main() {
     let args = args::Args::from_args();
 
-    env::set_current_dir(args.directory).unwrap();
+    env::set_current_dir(args.directory).expect("failed to set current dir");
 
-    let mut hub = create_youtube_hub().unwrap();
+    let mut hub = create_youtube_hub().expect("failed to initialize youtube api");
 
     let fetched_library = if args.debug {
-        serde_json::from_str(&fs::read_to_string(MOCK_API_FILE).unwrap()).unwrap()
+        serde_json::from_str(
+            &fs::read_to_string(MOCK_API_FILE).expect("failed to read mock-api file"),
+        )
+        .expect("failed to parse mock-api file")
     } else {
-        youtube::fetch_library(&mut hub).unwrap()
+        youtube::fetch_library(&mut hub).expect("failed to fetch youtube library")
     };
 
     let (non_removed_videos, playlists_of_removed_playlist_items) =

@@ -81,9 +81,8 @@ fn fetch_playlists(hub: &mut Hub) -> Result<Vec<google_youtube3::Playlist>> {
             .mine(true)
             .max_results(MAX_RESULTS)
             .page_token(&page_token)
-            .doit()
-            .unwrap();
-        playlists.append(&mut result.items.unwrap());
+            .doit()?;
+        playlists.append(&mut result.items.unwrap_or_default());
         match result.next_page_token {
             Some(s) => page_token = s,
             None => break,
@@ -105,9 +104,8 @@ fn fetch_playlist_items(
             .playlist_id(playlist_id)
             .max_results(MAX_RESULTS)
             .page_token(&page_token)
-            .doit()
-            .unwrap();
-        playlist_items.append(&mut result.items.unwrap());
+            .doit()?;
+        playlist_items.append(&mut result.items.unwrap_or_default());
         match result.next_page_token {
             Some(s) => page_token = s,
             None => break,
@@ -117,8 +115,7 @@ fn fetch_playlist_items(
 }
 
 pub fn fetch_library(hub: &mut Hub) -> Result<Vec<Playlist>> {
-    let playlists = fetch_playlists(hub)
-        .unwrap()
+    let playlists = fetch_playlists(hub)?
         .into_iter()
         .map(|playlist| {
             let mut new_pl = Playlist::from(playlist);
